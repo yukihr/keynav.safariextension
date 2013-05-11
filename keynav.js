@@ -6,14 +6,18 @@ var getScrollPos = function _getScrollPos() {
 };
 
 var scrollVertically = function(delta) {
-  window.scrollTo(getScrollPos().x, getScrollPos().y + delta);
+  return function () {
+    window.scrollTo(getScrollPos().x, getScrollPos().y + delta);
+  };
 };
 
 var scrollHorizontally = function(delta) {
-  window.scrollTo(getScrollPos().x + delta, getScrollPos().y);
+  return function () {
+    window.scrollTo(getScrollPos().x + delta, getScrollPos().y);
+  };
 };
 
-key('h', function(){ scrollVertically(100); });
-key('t', function(){ scrollVertically(-100); });
-key('d', function(){ scrollHorizontally(-100); });
-key('n', function(){ scrollHorizontally(100); });
+key('h', scrollVertically(100));
+key('t', scrollVertically(-100));
+key('d', scrollHorizontally(-100));
+key('n', scrollHorizontally(100));
