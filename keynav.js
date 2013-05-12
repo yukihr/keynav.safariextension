@@ -5,19 +5,40 @@ var getScrollPos = function _getScrollPos() {
   return obj;
 };
 
-var scrollVertically = function(delta) {
+var genScrollFn = function(fn) {
   return function () {
-    window.scrollTo(getScrollPos().x, getScrollPos().y + delta);
+    var pos = getScrollPos();
+    fn(window.scrollTo, pos);
   };
 };
 
+var scrollVertically = function(delta) {
+  return genScrollFn(function(scrollTo, pos) {
+    scrollTo(pos.x, pos.y + delta);
+  });
+};
+
 var scrollHorizontally = function(delta) {
-  return function () {
-    window.scrollTo(getScrollPos().x + delta, getScrollPos().y);
-  };
+  return genScrollFn(function(scrollTo, pos) {
+    scrollTo(pos.x + delta, pos.y);
+  });
+};
+
+var scrollToTop = function() {
+  return genScrollFn(function(scrollTo, pos) {
+    scrollTo(0,0);
+  });
+};
+
+var scrollToBottom = function() {
+  return genScrollFn(function(scrollTo, pos) {
+    scrollTo(0, document.body.scrollHeight);
+  });
 };
 
 key('h', scrollVertically(100));
 key('t', scrollVertically(-100));
 key('d', scrollHorizontally(-100));
 key('n', scrollHorizontally(100));
+key('g', scrollToTop());
+key('shift+g', scrollToBottom());
