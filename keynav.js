@@ -1,3 +1,12 @@
+var defaultEnabled = true;
+
+var toggleDefault = function () {
+  return function () {
+    if(defaultEnabled) { defaultEnabled = false; }
+    else { defaultEnabled = true; }
+  };
+};
+
 var getScrollPos = function _getScrollPos() {
   var obj = {};
   obj.x = document.documentElement.scrollLeft || document.body.scrollLeft;
@@ -9,6 +18,7 @@ var genScrollFn = function(fn) {
   return function () {
     var pos = getScrollPos();
     fn(window.scrollTo, pos);
+    return defaultEnabled;
   };
 };
 
@@ -42,3 +52,4 @@ key('d', scrollHorizontally(-100));
 key('n', scrollHorizontally(100));
 key('g', scrollToTop());
 key('shift+g', scrollToBottom());
+key('ctrl+z', toggleDefault());
