@@ -2,8 +2,7 @@ var defaultEnabled = true;
 
 var toggleDefault = function () {
   return function () {
-    if(defaultEnabled) { defaultEnabled = false; }
-    else { defaultEnabled = true; }
+    defaultEnabled = !defaultEnabled;
   };
 };
 
