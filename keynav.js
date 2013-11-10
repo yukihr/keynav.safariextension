@@ -1,54 +1,84 @@
-var defaultEnabled = true;
+(function(window) {
 
-var toggleDefault = function () {
-  return function () {
-    defaultEnabled = !defaultEnabled;
-  };
-};
+  var Keynav = (function() {
+    function Keynav() {}
 
-var getScrollPos = function _getScrollPos() {
-  var obj = {};
-  obj.x = document.documentElement.scrollLeft || document.body.scrollLeft;
-  obj.y = document.documentElement.scrollTop || document.body.scrollTop;
-  return obj;
-};
+    Keynav.prototype = {
+      defaultEnabled: true
 
-var genScrollFn = function(fn) {
-  return function () {
-    var pos = getScrollPos();
-    fn(window.scrollTo, pos);
-    return defaultEnabled;
-  };
-};
+      , toggleDefault: function () {
+        var self = this;
+        return function () {
+          self.defaultEnabled = !self.defaultEnabled;
+        };
+      }
 
-var scrollVertically = function(delta) {
-  return genScrollFn(function(scrollTo, pos) {
-    scrollTo(pos.x, pos.y + delta);
-  });
-};
+      , getScrollPos: function _getScrollPos() {
+        var obj = {};
+        obj.x = document.documentElement.scrollLeft || document.body.scrollLeft;
+        obj.y = document.documentElement.scrollTop || document.body.scrollTop;
+        return obj;
+      }
 
-var scrollHorizontally = function(delta) {
-  return genScrollFn(function(scrollTo, pos) {
-    scrollTo(pos.x + delta, pos.y);
-  });
-};
+      , genScrollFn: function(fn) {
+        var self = this;
+        return function () {
+          var pos = self.getScrollPos();
+          fn(window.scrollTo, pos);
+          return self.defaultEnabled;
+        };
+      }
 
-var scrollToTop = function() {
-  return genScrollFn(function(scrollTo, pos) {
-    scrollTo(0,0);
-  });
-};
+      , scrollVertically: function(delta) {
+        return this.genScrollFn(function(scrollTo, pos) {
+          window.scrollTo(pos.x, pos.y + delta);
+        });
+      }
 
-var scrollToBottom = function() {
-  return genScrollFn(function(scrollTo, pos) {
-    scrollTo(0, document.body.scrollHeight);
-  });
-};
+      , scrollHorizontally: function(delta) {
+        return this.genScrollFn(function(scrollTo, pos) {
+          window.scrollTo(pos.x + delta, pos.y);
+        });
+      }
 
-key('h', scrollVertically(100));
-key('t', scrollVertically(-100));
-key('d', scrollHorizontally(-100));
-key('n', scrollHorizontally(100));
-key('g', scrollToTop());
-key('shift+g', scrollToBottom());
-key('ctrl+z', toggleDefault());
+      , scrollToTop: function() {
+        return this.genScrollFn(function(scrollTo, pos) {
+          window.scrollTo(0,0);
+        });
+      }
+
+      , scrollToBottom: function() {
+        return this.genScrollFn(function(scrollTo, pos) {
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+      }
+
+      , historyBack: function() {
+        return function() {
+          window.history.back();
+        };
+      }
+
+      , historyPrev: function() {
+        return function() {
+          window.history.previous();
+        };
+      }
+    };
+
+    return Keynav;
+  }());
+
+  var kn = new Keynav();
+
+  key('h', kn.scrollVertically(100));
+  key('t', kn.scrollVertically(-100));
+  key('d', kn.scrollHorizontally(-100));
+  key('n', kn.scrollHorizontally(100));
+  key('g', kn.scrollToTop());
+  key('shift+g', kn.scrollToBottom());
+  key('ctrl+z', kn.toggleDefault());
+  key('alt+d', kn.historyBack());
+  key('alt+n', kn.historyPrev());
+
+}(window));
